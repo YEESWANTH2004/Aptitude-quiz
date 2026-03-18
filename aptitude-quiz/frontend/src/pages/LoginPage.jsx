@@ -295,9 +295,9 @@ export default function LoginPage() {
               </button>
 
               <div className="text-center">
-                <p className="text-xs text-gray-600">
+                {/* <p className="text-xs text-gray-600">
                   Admin: admin@quiz.com / Admin@123
-                </p>
+                </p> */}
               </div>
             </form>
           )}
