@@ -1,3 +1,43 @@
+// const jwt = require('jsonwebtoken');
+// const User = require('../models/User');
+
+// const protect = async (req, res, next) => {
+//   try {
+//     let token;
+
+//     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+//       token = req.headers.authorization.split(' ')[1];
+//     } else if (req.cookies?.accessToken) {
+//       token = req.cookies.accessToken;
+//     }
+
+//     if (!token) {
+//       return res.status(401).json({ error: 'Not authorized. No token provided.' });
+//     }
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = await User.findById(decoded.id).select('-password -refreshToken');
+
+//     if (!req.user) {
+//       return res.status(401).json({ error: 'User not found.' });
+//     }
+
+//     next();
+//   } catch (error) {
+//     return res.status(401).json({ error: 'Token is invalid or expired.' });
+//   }
+// };
+
+// const adminOnly = (req, res, next) => {
+//   if (req.user && req.user.role === 'admin') {
+//     return next();
+//   }
+//   return res.status(403).json({ error: 'Admin access required.' });
+// };
+
+// module.exports = { protect, adminOnly };
+
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -5,11 +45,13 @@ const protect = async (req, res, next) => {
   try {
     let token;
 
+    // Read ONLY from Authorization header (Bearer token)
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies?.accessToken) {
-      token = req.cookies.accessToken;
     }
+
+    console.log('Auth header:', req.headers.authorization ? 'present' : 'missing');
+    console.log('Token:', token ? token.substring(0, 20) + '...' : 'none');
 
     if (!token) {
       return res.status(401).json({ error: 'Not authorized. No token provided.' });
@@ -24,6 +66,7 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error('Auth middleware error:', error.message);
     return res.status(401).json({ error: 'Token is invalid or expired.' });
   }
 };
